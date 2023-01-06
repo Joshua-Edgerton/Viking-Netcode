@@ -10,7 +10,6 @@ public class PlayerNetwork : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner) return;
-
         float moveX = 0f;
         float moveY = 0f;
         if (Input.GetKey(KeyCode.W)) moveY = +1f;
