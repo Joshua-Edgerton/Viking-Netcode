@@ -6,12 +6,17 @@ using UnityEngine.InputSystem;
 
 public class PlayerNetwork : NetworkBehaviour
 {
-    [SerializeField] private NetworkVariable<float> moveSpeed = new NetworkVariable<float>(3f);
-    [SerializeField] private NetworkVariable<float> clientPlayerX = new NetworkVariable<float>(0f);
-    [SerializeField] private NetworkVariable<float> clientPlayerY = new NetworkVariable<float>(0f);
+    [SerializeField] private NetworkVariable<float> moveSpeed = new NetworkVariable<float>(10f);
+    [SerializeField] private Vector3 clientTransformVector = new Vector3();
+    [SerializeField] private Vector3 hostTransformVector = new Vector3();
+    [SerializeField] private NetworkVariable<float> serverTime = new NetworkVariable<float>(0f);
 
     private void Update()
     {
+        if (IsServer) 
+        { 
+            serverTime.Value = Time.deltaTime;
+        }
         if (!IsOwner) return;
 
         if (IsServer && IsLocalPlayer)
@@ -25,7 +30,8 @@ public class PlayerNetwork : NetworkBehaviour
             if(Input.GetKey(KeyCode.D)) moveX = +1f;
 
             Vector3 moveDirection = new Vector3(moveX, moveY, 0f).normalized;
-            transform.position += moveDirection * moveSpeed.Value * Time.deltaTime;
+            hostTransformVector = moveDirection;
+
         } else if (IsClient && IsLocalPlayer)
         {
             float moveX = 0f;
@@ -37,18 +43,31 @@ public class PlayerNetwork : NetworkBehaviour
             if(Input.GetKey(KeyCode.D)) moveX = +1f;
 
             Vector3 moveDirection = new Vector3(moveX, moveY, 0f).normalized;
-
-            //Debug.Log(moveDirection);
-
-            MovementServerRpc(moveDirection);
+            clientTransformVector = moveDirection;
         }
 
     }
 
-    [ServerRpc]
-    public void MovementServerRpc(Vector3 moveDirection)
+    void FixedUpdate()
     {
-        Debug.Log("Tried Server RPC");
-        transform.position += moveDirection * moveSpeed.Value * Time.deltaTime;
+        if (IsServer && IsLocalPlayer)
+        {
+            HostMovement(hostTransformVector);
+        }
+        if (IsClient && IsLocalPlayer) 
+        {
+            ClientMovementServerRpc(clientTransformVector);
+        }
+    }
+
+    public void HostMovement(Vector3 moveDirection)
+    { 
+        transform.position += moveDirection * moveSpeed.Value * serverTime.Value;
+    }
+
+    [ServerRpc]
+    public void ClientMovementServerRpc(Vector3 moveDirection)
+    {
+        transform.position += moveDirection * moveSpeed.Value * serverTime.Value;
     }
 }
