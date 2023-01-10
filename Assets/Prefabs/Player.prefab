@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7393852099263419509}
   - component: {fileID: 7393852099263419506}
   m_Layer: 0
-  m_Name: Body
+  m_Name: PlayerSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 7393852099620213849}
   - component: {fileID: 7393852099620213848}
   - component: {fileID: 5800750459132197909}
-  - component: {fileID: 9180510858177681490}
+  - component: {fileID: 6252001730642302621}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -147,8 +147,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b91a85d74d27d4e409c899b5ebaa1a5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
---- !u!114 &9180510858177681490
+  moveSpeed:
+    m_InternalValue: 3
+  movingUp:
+    m_InternalValue: 0
+--- !u!114 &6252001730642302621
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,19 +160,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 7393852099620213851}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 0
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.01
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   InLocalSpace: 0
