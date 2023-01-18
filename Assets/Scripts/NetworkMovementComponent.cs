@@ -25,10 +25,10 @@ public class NetworkMovementComponent : NetworkBehaviour
 
     //Creating a new array of sent inputs, with as many elements as the buffer size
     //The buffer size is how many stored ticks of information the array will keep stored
-    private InputState[] _inputStates = new InputState[BUFFER_SIZE];
+    public InputState[] _inputStates = new InputState[BUFFER_SIZE];
 
     // An array of transforms with the same buffer size
-    private TransformState[] _transformStates = new TransformState[BUFFER_SIZE];
+    public TransformState[] _transformStates = new TransformState[BUFFER_SIZE];
 
     // So the server can send this information -
     // This will be the latest transform that has been established on the server
@@ -64,8 +64,8 @@ public class NetworkMovementComponent : NetworkBehaviour
             if (!IsServer)
             {
                 // New server RPC which takes the current tick and the input
-                MovePlayerServerRpc(_tick, movementInput);
                 MovePlayer(movementInput);
+                MovePlayerServerRpc(_tick, movementInput);
 
             } else 
             {
@@ -124,12 +124,13 @@ public class NetworkMovementComponent : NetworkBehaviour
     // IMPORTANT TO UPDATE !!!
     private void MovePlayer(Vector3 movementInput)
     {
-        _pn.Move(movementInput, _speed, _tickRate);
+        transform.position += movementInput * _speed * _tickRate;
+        //_pn.Move(movementInput, _speed, _tickRate);
     }
 
     // Server RPC that processes player movement
     [ServerRpc]
-    private void MovePlayerServerRpc(int tick, Vector2 movementInput)
+    private void MovePlayerServerRpc(int tick, Vector3 movementInput)
     {   
         // This will move the player
         MovePlayer(movementInput);

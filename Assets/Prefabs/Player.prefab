@@ -95,7 +95,6 @@ GameObject:
   - component: {fileID: 7393852099620213849}
   - component: {fileID: 7393852099620213848}
   - component: {fileID: 5800750459132197909}
-  - component: {fileID: 6252001730642302621}
   - component: {fileID: 7260807511946618714}
   m_Layer: 0
   m_Name: Player
@@ -148,39 +147,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b91a85d74d27d4e409c899b5ebaa1a5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed:
-    m_InternalValue: 10
-  clientTransformVector: {x: 0, y: 0, z: 0}
-  hostTransformVector: {x: 0, y: 0, z: 0}
   serverTime:
     m_InternalValue: 0
   _playerMovement: {fileID: 7260807511946618714}
---- !u!114 &6252001730642302621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7393852099620213851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 0
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.01
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  InLocalSpace: 0
-  Interpolate: 1
+  latencyTest: 0
+  playerMovedAt: 0
+  playerMoved: 0
 --- !u!114 &7260807511946618714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,4 +166,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pn: {fileID: 5800750459132197909}
-  _speed: 3
+  _speed: 5

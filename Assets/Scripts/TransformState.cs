@@ -6,7 +6,7 @@ using UnityEngine;
 public class TransformState : INetworkSerializable
 {
     public int Tick;
-    public Vector2 Position;
+    public Vector3 Position;
     //public Quaternion Rotation;
     public bool HasStartedMoving;
 
