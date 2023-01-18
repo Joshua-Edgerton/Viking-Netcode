@@ -10,11 +10,6 @@ public class NetworkMovementComponent : NetworkBehaviour
     [SerializeField] private PlayerNetwork _pn;
     [SerializeField] private float _speed;
 
-    //[SerializeField] private float _turnSpeed;
-    //[SerializeField] private Transform _camSocket;
-    //[SerializeField] private GameObject __vcam;
-    //private Transform _vcamTransform;
-
     //Tick rate for the server
     private int _tick = 0;
     private float _tickRate = 1f / 60f;
@@ -120,12 +115,9 @@ public class NetworkMovementComponent : NetworkBehaviour
         }
     }
 
-    // This part is coded differently from the tutorial video
-    // IMPORTANT TO UPDATE !!!
     private void MovePlayer(Vector3 movementInput)
     {
         transform.position += movementInput * _speed * _tickRate;
-        //_pn.Move(movementInput, _speed, _tickRate);
     }
 
     // Server RPC that processes player movement
