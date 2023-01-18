@@ -10,6 +10,8 @@ public class PlayerNetwork : NetworkBehaviour
     [SerializeField] private Vector3 clientTransformVector = new Vector3();
     [SerializeField] private Vector3 hostTransformVector = new Vector3();
     [SerializeField] private NetworkVariable<float> serverTime = new NetworkVariable<float>(0f);
+    // part of tutorial
+    [SerializeField] private NetworkMovementComponent _playerMovement;
 
     private void Update()
     {
@@ -17,6 +19,7 @@ public class PlayerNetwork : NetworkBehaviour
         { 
             serverTime.Value = Time.deltaTime;
         }
+        
         if (!IsOwner) return;
 
         if (IsServer && IsLocalPlayer)
@@ -43,7 +46,11 @@ public class PlayerNetwork : NetworkBehaviour
             if(Input.GetKey(KeyCode.D)) moveX = +1f;
 
             Vector3 moveDirection = new Vector3(moveX, moveY, 0f).normalized;
-            clientTransformVector = moveDirection;
+            _playerMovement.ProcessLocalPlayerMovement(moveDirection);
+            //clientTransformVector = moveDirection;
+        } else
+        {
+            _playerMovement.ProcessSimulatedPlayerMovement();
         }
 
     }
@@ -58,6 +65,12 @@ public class PlayerNetwork : NetworkBehaviour
         {
             ClientMovementServerRpc(clientTransformVector);
         }
+    }
+
+    // New function for movement with Client Side prediction
+    public void Move(Vector3 moveDirection, float _speed, float tick) 
+    { 
+        transform.position += moveDirection * _speed * tick;
     }
 
     public void HostMovement(Vector3 moveDirection)
