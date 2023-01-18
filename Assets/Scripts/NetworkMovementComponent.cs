@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System;
+using System.Linq;
 
 public class NetworkMovementComponent : NetworkBehaviour
 {
     // Referencing the player network script
     [SerializeField] private PlayerNetwork _pn;
     [SerializeField] private float _speed;
+
+    // Code to help debug reconciliation
+    // [SerializeField] private MeshFilter _meshFilter;
+    // [SerializeField] private Color _color;
 
     //Tick rate for the server
     private int _tick = 0;
@@ -37,10 +42,76 @@ public class NetworkMovementComponent : NetworkBehaviour
     }
 
     //In the future, this is where server reconciliation will be established
-    private void OnServerStateChanged(TransformState previousValue, TransformState newValue)
+    private void OnServerStateChanged(TransformState previousValue, TransformState serverState)
     {
         // Set the previous transform state to be the previous value
-        _previousTransformState = previousValue;
+        //_previousTransformState = previousValue;
+
+        // if you are not the local player, ignore this code
+        if(!IsLocalPlayer) return;
+
+        // The first update should be null, so set the previous state to server state
+        if(_previousTransformState == null) 
+        {
+            _previousTransformState = serverState;
+        }
+
+        TransformState calculatedState = _transformStates.First(localState => localState.Tick == serverState.Tick);
+        // If the predicted state is not the same as the server state -
+        if(calculatedState.Position != serverState.Position) 
+        {
+            Debug.Log("Correcting Client Position");
+            // Teleport the player to the server position
+            TeleportPlayer(serverState);
+
+            // Replay the inputs that happen after
+            // This grabs all server states from the ticks that happened after
+            IEnumerable<InputState> inputs = _inputStates.Where(input => input.Tick > serverState.Tick);
+            inputs = from input in inputs orderby input.Tick select input;
+
+            // For each input state within those inputs -
+            foreach (var inputState in inputs)
+            {
+                // Move the player with those missed inputs
+                MovePlayer(inputState.movementInput);
+
+                TransformState newTransformState = new TransformState()
+                {
+                    Tick = inputState.Tick,
+                    Position = transform.position,
+                    HasStartedMoving = true
+                };
+
+                for (int i = 0; i < _transformStates.Length; i++)
+                {
+                    if(_transformStates[i].Tick == inputState.Tick) 
+                    {
+                        _transformStates[i] = newTransformState;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void TeleportPlayer(TransformState state)
+    {   
+        // Disable the player network script so that the player cant continue to move
+        _pn.enabled = false;
+        // Set position to the server state position
+        transform.position = state.Position;
+        // Enable script again
+        _pn.enabled = true;
+
+        // Reset value that was stored in local array for the transform
+        for (int i = 0; i < _transformStates.Length; i++)
+        {
+            if(_transformStates[i].Tick == state.Tick) 
+            {
+                _transformStates[i] = state;
+                break;
+            }
+        }
     }
 
     // Enable the PlayerNetwork script controller to call a method for actually moving
@@ -140,5 +211,15 @@ public class NetworkMovementComponent : NetworkBehaviour
         _previousTransformState = ServerTransformState.Value;
         ServerTransformState.Value = state;
     }
+
+    // Code to debug reconciliation
+    // private void OnDrawGizmos() 
+    // {
+    //     if (ServerTransformState.Value != null)
+    //     {
+    //         Gizmos.color = _color;
+    //         Gizmos.DrawMesh(_meshFilter.mesh, ServerTransformState.Value.Position);
+    //     }
+    // }
 
 }
